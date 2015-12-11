@@ -3,9 +3,11 @@
 self.addEventListener('push', function(event) {
   console.log('Received a push message', event);
 
-  var title = 'Yay a message.';
-  var body = 'We have received a push message.';
-  var icon = '/images/icon-192x192.png';
+  var image = String(Math.round(Math.random()*4) + 1) + '.jpg';
+
+  var title = 'Bakchodi...Hum se????';
+  var body = 'Rishte mein to hum tumhare baap lagte hain.....';
+  var icon = '/images/'+image;
   var tag = 'simple-push-demo-notification-tag';
 
   event.waitUntil(
