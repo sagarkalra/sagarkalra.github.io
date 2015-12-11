@@ -28,6 +28,9 @@ function endpointWorkaround(pushSubscription) {
 }
 
 function sendSubscriptionToServer(subscription) {
+  $.post('https://bebetter.in/subscribe', { "did": subscription.endpoint}, function(response) {
+    console.log(response);
+  });
   // TODO: Send the subscription.endpoint
   // to your server and save it to send a
   // push message at a later date
