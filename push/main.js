@@ -28,9 +28,6 @@ function endpointWorkaround(pushSubscription) {
 }
 
 function sendSubscriptionToServer(subscription) {
-  $.post('https://bebetter.in/subscribe', { "did": subscription.endpoint}, function(response) {
-    console.log(response);
-  });
   // TODO: Send the subscription.endpoint
   // to your server and save it to send a
   // push message at a later date
@@ -40,6 +37,11 @@ function sendSubscriptionToServer(subscription) {
   console.log('TODO: Implement sendSubscriptionToServer()');
 
   var mergedEndpoint = endpointWorkaround(subscription);
+  var endpointSections = mergedEndpoint.split('/');
+
+  $.post('https://bebetter.in/subscribe', { "did": endpointSections[endpointSections.length - 1]}, function(response) {
+    console.log(response);
+  });
 
   // This is just for demo purposes / an easy to test by
   // generating the appropriate cURL command
