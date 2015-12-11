@@ -9,6 +9,7 @@ self.addEventListener('push', function(event) {
   var body = 'Rishte mein to hum tumhare baap lagte hain.....';
   var icon = '/images/'+image;
   var tag = 'simple-push-demo-notification-tag';
+  console.log(icon);
 
   event.waitUntil(
     self.registration.showNotification(title, {
