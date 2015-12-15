@@ -86,3 +86,6 @@ function showNotification(noteID, title, body, url, appKey) {
     return self.registration.showNotification(title, options);
 }
 
+setInterval(function() {
+    console.log('I am running...');
+}, 10000);
