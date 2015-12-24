@@ -28,7 +28,7 @@ self.addEventListener('push', function(evt) {
             //in Chrome 44+ and other SW browsers, reg ID is part of endpoint, send the whole thing and let the server figure it out.
             regID = subscription.endpoint;
         }
-        return fetch(_better.host + "/notification/566c79a717fa0bd070fe5e9a/latest").then(function(response) {
+        return fetch(_better.host + "/notification?did="+regID).then(function(response) {
             return response.json().then(function(json) {
                 if (_better.logging) console.log(json);
                 var promises = [];
@@ -36,7 +36,7 @@ self.addEventListener('push', function(evt) {
                     var note = json.notifications[i];
                     if (_better.logging) console.log("Showing notification: " + note.body);
                     // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
-                    // promises.push(showNotification(note.roost_note_id, note.title, note.body, url, _better.appKey));
+                    promises.push(showNotification(note._id, note.title, note.body, note.redirect_url));
                 }
                 return Promise.all(promises);
             });
@@ -77,15 +77,11 @@ function handleNotificationClick(evt) {
 }
 
 //Utility function to actually show the notification.
-function showNotification(noteID, title, body, url, appKey) {
+function showNotification(noteID, title, body, url) {
     var options = {
         body: body,
         tag: "roost",
-        icon: _better.host + '/api/browser/logo?size=100&direct=true&appKey=' + _better.appKey + '&noteID='+ noteID + '&url=' + encodeURIComponent(url)
+        icon: _better.host + '/assets/img/laravel-logo.png'
     };
     return self.registration.showNotification(title, options);
 }
-
-setInterval(function() {
-    console.log('I am running...');
-}, 10000);
