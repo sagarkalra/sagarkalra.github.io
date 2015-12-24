@@ -31,7 +31,7 @@ self.addEventListener('push', function(evt) {
         var mergedEndpoint = endpointWorkaround(subscription);
         var endpointSections = mergedEndpoint.split('/');
         var did = endpointSections[endpointSections.length - 1]
-        console.log("hitting URL: "+_better.host + "/notification?did="+did);
+        console.log("hitting URL: "+_better.host + "/notification/"+did);
         return fetch(_better.host + "/notification?did="+did).then(function(response) {
             return response.json().then(function(json) {
                 if (_better.logging) console.log(json);
