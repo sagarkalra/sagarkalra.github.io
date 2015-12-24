@@ -36,12 +36,12 @@ self.addEventListener('push', function(evt) {
             return response.json().then(function(json) {
                 if (_better.logging) console.log(json);
                 var promises = [];
-                for (var i = 0; i < json.notifications.length; i++) {
-                    var note = json.notifications[i];
+                // for (var i = 0; i < json.notifications.length; i++) {
+                    var note = json;
                     if (_better.logging) console.log("Showing notification: " + note.body);
                     // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                     promises.push(showNotification(note._id, note.title, note.body, note.redirect_url));
-                }
+                // }
                 return Promise.all(promises);
             }).catch(function(err) {
                 console.log('something weird happened');
