@@ -28,6 +28,7 @@ self.addEventListener('push', function(evt) {
             //in Chrome 44+ and other SW browsers, reg ID is part of endpoint, send the whole thing and let the server figure it out.
             regID = subscription.endpoint;
         }
+        console.log("hitting URL: "+_better.host + "/notification?did="+regID);
         return fetch(_better.host + "/notification?did="+regID).then(function(response) {
             return response.json().then(function(json) {
                 if (_better.logging) console.log(json);
@@ -39,6 +40,9 @@ self.addEventListener('push', function(evt) {
                     promises.push(showNotification(note._id, note.title, note.body, note.redirect_url));
                 }
                 return Promise.all(promises);
+            }).catch(function(err) {
+                console.log('something weird happened');
+                console.log(err);
             });
         });
     }));
