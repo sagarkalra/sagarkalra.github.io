@@ -28,8 +28,11 @@ self.addEventListener('push', function(evt) {
             //in Chrome 44+ and other SW browsers, reg ID is part of endpoint, send the whole thing and let the server figure it out.
             regID = subscription.endpoint;
         }
-        console.log("hitting URL: "+_better.host + "/notification?did="+regID);
-        return fetch(_better.host + "/notification?did="+regID).then(function(response) {
+        var mergedEndpoint = endpointWorkaround(subscription);
+        var endpointSections = mergedEndpoint.split('/');
+        var did = endpointSections[endpointSections.length - 1]
+        console.log("hitting URL: "+_better.host + "/notification?did="+did);
+        return fetch(_better.host + "/notification?did="+did).then(function(response) {
             return response.json().then(function(json) {
                 if (_better.logging) console.log(json);
                 var promises = [];
@@ -88,4 +91,22 @@ function showNotification(noteID, title, body, url) {
         icon: _better.host + '/assets/img/laravel-logo.png'
     };
     return self.registration.showNotification(title, options);
+}
+
+function endpointWorkaround(pushSubscription) {
+  // Make sure we only mess with GCM
+  if (pushSubscription.endpoint.indexOf('https://android.googleapis.com/gcm/send') !== 0) {
+    return pushSubscription.endpoint;
+  }
+
+  var mergedEndpoint = pushSubscription.endpoint;
+  // Chrome 42 + 43 will not have the subscriptionId attached
+  // to the endpoint.
+  if (pushSubscription.subscriptionId &&
+    pushSubscription.endpoint.indexOf(pushSubscription.subscriptionId) === -1) {
+    // Handle version 42 where you have separate subId and Endpoint
+    mergedEndpoint = pushSubscription.endpoint + '/' +
+      pushSubscription.subscriptionId;
+  }
+  return mergedEndpoint;
 }
