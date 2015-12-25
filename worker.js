@@ -41,7 +41,7 @@ self.addEventListener('push', function(evt) {
                     if (_better.logging) console.log("Showing notification: " + note.body);
                     // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                     var url = note.icon_url + '?notificationURL=' + encodeURIComponent(note.redirect_url);
-                    promises.push(showNotification(note._id, note.title, note.body, note.icon_url));
+                    promises.push(showNotification(note._id, note.title, note.body, url));
                 // }
                 return Promise.all(promises);
             }).catch(function(err) {
