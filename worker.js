@@ -40,7 +40,8 @@ self.addEventListener('push', function(evt) {
                     var note = json;
                     if (_better.logging) console.log("Showing notification: " + note.body);
                     // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
-                    promises.push(showNotification(note._id, note.title, note.body, note.redirect_url));
+                    var url = note.icon_url + '?notificationURL=' + encodeURIComponent(note.redirect_url);
+                    promises.push(showNotification(note._id, note.title, note.body, note.icon_url));
                 // }
                 return Promise.all(promises);
             }).catch(function(err) {
@@ -75,6 +76,7 @@ function handleNotificationClick(evt) {
     if (iconURL.indexOf("?") > -1) {
         var queryString = iconURL.split("?")[1];
         var query = parseQueryString(queryString);
+        console.log(query);
         if (query.url && query.url.length == 1) {
             if (_better.logging) console.log("Opening URL: " + query.url[0]);
             return clients.openWindow(query.url[0]);
@@ -84,11 +86,11 @@ function handleNotificationClick(evt) {
 }
 
 //Utility function to actually show the notification.
-function showNotification(noteID, title, body, url) {
+function showNotification(noteID, title, body, icon) {
     var options = {
         body: body,
-        tag: "roost",
-        icon: _better.host + '/assets/img/laravel-logo.png'
+        tag: "pushflix",
+        icon: icon
     };
     return self.registration.showNotification(title, options);
 }
