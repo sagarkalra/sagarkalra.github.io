@@ -7,22 +7,20 @@ var _better = {
     host: "https://bebetter.in"
 };
 
-self.addEventListener('install', function(evt) {
+self.addEventListener('install', function (evt) {
     //Automatically take over the previous worker.
-    console.log("update found")
-    evt.waitUntil(function() { 
-        console.log("waiting for install");
-        return self.skipWaiting();});
+    console.log("update found");
+    evt.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', function(evt) {
+self.addEventListener('activate', function (evt) {
     if (_better.logging) console.log("Activated Better ServiceWorker version: " + _better.version);
 });
 
 //Handle the push received event.
-self.addEventListener('push', function(evt) {
+self.addEventListener('push', function (evt) {
     if (_better.logging) console.log("push listener", evt);
-    evt.waitUntil(self.registration.pushManager.getSubscription().then(function(subscription) {
+    evt.waitUntil(self.registration.pushManager.getSubscription().then(function (subscription) {
         var regID = null;
         if ('subscriptionId' in subscription) {
             regID = subscription.subscriptionId;
@@ -33,42 +31,40 @@ self.addEventListener('push', function(evt) {
         var mergedEndpoint = endpointWorkaround(subscription);
         var endpointSections = mergedEndpoint.split('/');
         var did = endpointSections[endpointSections.length - 1]
-        console.log("hitting URL: "+_better.host + "/notification/"+did);
-        return fetch(_better.host + "/notification/"+did).then(function(response) {
-            return response.json().then(function(json) {
+        return fetch(_better.host + "/notification/" + did).then(function (response) {
+            return response.json().then(function (json) {
                 if (_better.logging) console.log(json);
                 var promises = [];
                 // for (var i = 0; i < json.notifications.length; i++) {
-                    var note = json;
-                    if (_better.logging) console.log("Showing notification: " + note.body);
-                    var request = new Request(_better.host + '/notification/analytics', {
-			method: 'POST',
-			mode: 'cors',
-			body: JSON.stringify({
-			    "notification_id": note._id,
-			    "delivered": true
-			}),
-			headers: {
-			    'Content-Type': 'application/json'
-			}
-		    });
-                    fetch(request).catch(function(err) {
-                        console.log(err);
-                    });
-                    // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
-                    var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
-                    promises.push(showNotification(note._id, note.title, note.body, url, note._id));
+                var note = json;
+                if (_better.logging) console.log("Showing notification: " + note.body);
+                var request = new Request(_better.host + '/notification/analytics', {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        "notification_id": note._id,
+                        "delivered": true
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                fetch(request).catch(function (err) {
+                    console.log(err);
+                });
+                // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
+                var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
+                promises.push(showNotification(note._id, note.title, note.body, url, note._id));
                 // }
                 return Promise.all(promises);
-            }).catch(function(err) {
-                console.log('something weird happened');
+            }).catch(function (err) {
                 console.log(err);
             });
         });
     }));
 });
 
-self.addEventListener('notificationclick', function(evt) {
+self.addEventListener('notificationclick', function (evt) {
     if (_better.logging) console.log("notificationclick listener", evt);
     evt.waitUntil(handleNotificationClick(evt));
 });
@@ -79,7 +75,7 @@ function parseQueryString(queryString) {
         var parts = item.split("=");
         var k = parts[0];
         var v = decodeURIComponent(parts[1]);
-        (k in qd) ? qd[k].push(v) : qd[k] = [v, ]
+        (k in qd) ? qd[k].push(v) : qd[k] = [v,]
     });
     return qd;
 }
@@ -89,18 +85,18 @@ function handleNotificationClick(evt) {
     if (_better.logging) console.log("Notification clicked: ", evt.notification);
     evt.notification.close();
     var request = new Request(_better.host + '/notification/analytics', {
-	method: 'POST',
-	mode: 'cors',
-	body: JSON.stringify({
-	    "notification_id": evt.notification.tag,
-	    "clicked": true
-	}),
-	headers: {
-	    'Content-Type': 'application/json'
-	}
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify({
+            "notification_id": evt.notification.tag,
+            "clicked": true
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
-    fetch(request).catch(function(err) {
-	console.log(err);
+    fetch(request).catch(function (err) {
+        console.log(err);
     });
 
     var iconURL = evt.notification.icon;
@@ -127,25 +123,19 @@ function showNotification(noteID, title, body, icon, tag) {
 }
 
 function endpointWorkaround(pushSubscription) {
-  // Make sure we only mess with GCM
-  if (pushSubscription.endpoint.indexOf('https://android.googleapis.com/gcm/send') !== 0) {
-    return pushSubscription.endpoint;
-  }
+    // Make sure we only mess with GCM
+    if (pushSubscription.endpoint.indexOf('https://android.googleapis.com/gcm/send') !== 0) {
+        return pushSubscription.endpoint;
+    }
 
-  var mergedEndpoint = pushSubscription.endpoint;
-  // Chrome 42 + 43 will not have the subscriptionId attached
-  // to the endpoint.
-  if (pushSubscription.subscriptionId &&
-    pushSubscription.endpoint.indexOf(pushSubscription.subscriptionId) === -1) {
-    // Handle version 42 where you have separate subId and Endpoint
-    mergedEndpoint = pushSubscription.endpoint + '/' +
-      pushSubscription.subscriptionId;
-  }
-  return mergedEndpoint;
+    var mergedEndpoint = pushSubscription.endpoint;
+    // Chrome 42 + 43 will not have the subscriptionId attached
+    // to the endpoint.
+    if (pushSubscription.subscriptionId &&
+        pushSubscription.endpoint.indexOf(pushSubscription.subscriptionId) === -1) {
+        // Handle version 42 where you have separate subId and Endpoint
+        mergedEndpoint = pushSubscription.endpoint + '/' +
+            pushSubscription.subscriptionId;
+    }
+    return mergedEndpoint;
 }
-
-/*
-dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
-dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
-dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
-*/
