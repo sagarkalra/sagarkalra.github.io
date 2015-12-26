@@ -9,7 +9,10 @@ var _better = {
 
 self.addEventListener('install', function(evt) {
     //Automatically take over the previous worker.
-    evt.waitUntil(self.skipWaiting());
+    console.log("update found")
+    evt.waitUntil(function() { 
+        console.log("waiting for install");
+        return self.skipWaiting();});
 });
 
 self.addEventListener('activate', function(evt) {
