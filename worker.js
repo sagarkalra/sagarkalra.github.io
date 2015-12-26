@@ -3,7 +3,6 @@
 var _better = {
     version: 2,
     logging: true,
-    // appKey: "b0c6e44714304c5697b13ff4dcd7c3ad",
     host: "https://bebetter.in"
 };
 
