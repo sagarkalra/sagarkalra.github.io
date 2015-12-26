@@ -1,5 +1,4 @@
 "use strict";
-//var _better = {version: 1, logging: true, appKey:"b0c6e44714304c5697b13ff4dcd7c3ad", host: "http://localhost:8081", baseURL: "http://localhost:8081"};
 
 var _better = {
     version: 2,
@@ -14,7 +13,7 @@ self.addEventListener('install', function(evt) {
 });
 
 self.addEventListener('activate', function(evt) {
-    if (_better.logging) console.log("Activated Roost ServiceWorker version: " + _better.version);
+    if (_better.logging) console.log("Activated Better ServiceWorker version: " + _better.version);
 });
 
 //Handle the push received event.
@@ -141,3 +140,9 @@ function endpointWorkaround(pushSubscription) {
   }
   return mergedEndpoint;
 }
+
+/*
+dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
+dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
+dfhvghe ve hsyugvwdjkhvwiu vewyvhey fgwiu bvuywg cbwfweui bvuwg chbwiyfc gwhuigcf86w geyg uw gudsyb wg vwugv
+*/
