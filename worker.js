@@ -39,9 +39,23 @@ self.addEventListener('push', function(evt) {
                 // for (var i = 0; i < json.notifications.length; i++) {
                     var note = json;
                     if (_better.logging) console.log("Showing notification: " + note.body);
+                    var request = new Request(_better.host + '/notification/analytics', {
+			method: 'POST',
+			mode: 'cors',
+			body: JSON.stringify({
+			    "notification_id": note._id,
+			    "delivered": true
+			}),
+			headers: {
+			    'Content-Type': 'application/json'
+			}
+		    });
+                    fetch(request).catch(function(err) {
+                        console.log(err);
+                    });
                     // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                     var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
-                    promises.push(showNotification(note._id, note.title, note.body, url));
+                    promises.push(showNotification(note._id, note.title, note.body, url, note._id));
                 // }
                 return Promise.all(promises);
             }).catch(function(err) {
@@ -72,6 +86,21 @@ function parseQueryString(queryString) {
 function handleNotificationClick(evt) {
     if (_better.logging) console.log("Notification clicked: ", evt.notification);
     evt.notification.close();
+    var request = new Request(_better.host + '/notification/analytics', {
+	method: 'POST',
+	mode: 'cors',
+	body: JSON.stringify({
+	    "notification_id": note._id,
+	    "clicked": true
+	}),
+	headers: {
+	    'Content-Type': 'application/json'
+	}
+    });
+    fetch(request).catch(function(err) {
+	console.log(err);
+    });
+
     var iconURL = evt.notification.icon;
     if (iconURL.indexOf("?") > -1) {
         var queryString = iconURL.split("?")[1];
@@ -86,10 +115,10 @@ function handleNotificationClick(evt) {
 }
 
 //Utility function to actually show the notification.
-function showNotification(noteID, title, body, icon) {
+function showNotification(noteID, title, body, icon, tag) {
     var options = {
         body: body,
-        tag: "pushflix",
+        tag: tag,
         icon: icon
     };
     return self.registration.showNotification(title, options);
