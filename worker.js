@@ -90,7 +90,7 @@ function handleNotificationClick(evt) {
 	method: 'POST',
 	mode: 'cors',
 	body: JSON.stringify({
-	    "notification_id": note._id,
+	    "notification_id": evt.notification.tag,
 	    "clicked": true
 	}),
 	headers: {
