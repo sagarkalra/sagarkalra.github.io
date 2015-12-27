@@ -33,8 +33,6 @@ self.addEventListener('push', function (evt) {
         return fetch(_better.host + "/notification/" + did).then(function (response) {
             return response.json().then(function (json) {
                 if (_better.logging) console.log(json);
-                var promises = [];
-                // for (var i = 0; i < json.notifications.length; i++) {
                 var note = json;
                 if (_better.logging) console.log("Showing notification: " + note.body);
                 var request = new Request(_better.host + '/notification/analytics', {
@@ -51,11 +49,12 @@ self.addEventListener('push', function (evt) {
                 fetch(request).catch(function (err) {
                     if(_better.logging) console.log(err);
                 });
+                //var promises = [];
                 // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                 var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
-                promises.push(showNotification(note._id, note.title, note.body, url, note._id));
-                // }
-                return Promise.all(promises);
+                //promises.push(showNotification(note._id, note.title, note.body, url));
+                return showNotification(note._id, note.title, note.body, url);
+                //return Promise.all(promises);
             }).catch(function (err) {
                 if(_better.logging) console.log(err);
             });
@@ -112,10 +111,10 @@ function handleNotificationClick(evt) {
 }
 
 //Utility function to actually show the notification.
-function showNotification(noteID, title, body, icon, tag) {
+function showNotification(noteID, title, body, icon) {
     var options = {
         body: body,
-        tag: tag,
+        tag: noteID,
         icon: icon
     };
     return self.registration.showNotification(title, options);
