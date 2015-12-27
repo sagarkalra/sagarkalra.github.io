@@ -8,7 +8,7 @@ var _better = {
 
 self.addEventListener('install', function (evt) {
     //Automatically take over the previous worker.
-    console.log("update found");
+    if(_better.logging) console.log("update found");
     evt.waitUntil(self.skipWaiting());
 });
 
@@ -49,7 +49,7 @@ self.addEventListener('push', function (evt) {
                     }
                 });
                 fetch(request).catch(function (err) {
-                    console.log(err);
+                    if(_better.logging) console.log(err);
                 });
                 // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                 var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
@@ -57,7 +57,7 @@ self.addEventListener('push', function (evt) {
                 // }
                 return Promise.all(promises);
             }).catch(function (err) {
-                console.log(err);
+                if(_better.logging) console.log(err);
             });
         });
     }));
@@ -95,20 +95,20 @@ function handleNotificationClick(evt) {
         }
     });
     fetch(request).catch(function (err) {
-        console.log(err);
+        if(_better.logging) console.log(err);
     });
 
     var iconURL = evt.notification.icon;
     if (iconURL.indexOf("?") > -1) {
         var queryString = iconURL.split("?")[1];
         var query = parseQueryString(queryString);
-        console.log(query);
+        //if(_better.logging) console.log(query);
         if (query.url && query.url.length == 1) {
             if (_better.logging) console.log("Opening URL: " + query.url[0]);
             return clients.openWindow(query.url[0]);
         }
     }
-    console.log("Failed to redirect to notification for iconURL: " + iconURL);
+    if(_better.logging) console.log("Failed to redirect to notification for iconURL: " + iconURL);
 }
 
 //Utility function to actually show the notification.
