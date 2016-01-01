@@ -3,7 +3,8 @@
 var _better = {
     version: 2,
     logging: true,
-    host: "https://bebetter.in"
+    host: "https://bebetter.in",
+    analytics: '/notification/analytics'
 };
 
 self.addEventListener('install', function (evt) {
@@ -29,13 +30,13 @@ self.addEventListener('push', function (evt) {
         }
         var mergedEndpoint = endpointWorkaround(subscription);
         var endpointSections = mergedEndpoint.split('/');
-        var did = endpointSections[endpointSections.length - 1]
+        var did = endpointSections[endpointSections.length - 1];
         return fetch(_better.host + "/notification/" + did).then(function (response) {
             return response.json().then(function (json) {
                 if (_better.logging) console.log(json);
                 var note = json;
                 if (_better.logging) console.log("Showing notification: " + note.body);
-                var request = new Request(_better.host + '/notification/analytics', {
+                var request = new Request(_better.host + _better.analytics, {
                     method: 'POST',
                     mode: 'cors',
                     body: JSON.stringify({
@@ -49,12 +50,8 @@ self.addEventListener('push', function (evt) {
                 fetch(request).catch(function (err) {
                     if(_better.logging) console.log(err);
                 });
-                //var promises = [];
-                // var url = "/roost.html?noteID=" + note.roost_note_id + "&sendID=" + note.roost_send_id + "&body=" + encodeURIComponent(note.body);
                 var url = note.icon_url + '?url=' + encodeURIComponent(note.redirect_url);
-                //promises.push(showNotification(note._id, note.title, note.body, url));
                 return showNotification(note._id, note.title, note.body, url);
-                //return Promise.all(promises);
             }).catch(function (err) {
                 if(_better.logging) console.log(err);
             });
@@ -82,7 +79,7 @@ function parseQueryString(queryString) {
 function handleNotificationClick(evt) {
     if (_better.logging) console.log("Notification clicked: ", evt.notification);
     evt.notification.close();
-    var request = new Request(_better.host + '/notification/analytics', {
+    var request = new Request(_better.host + _better.analytics, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({
