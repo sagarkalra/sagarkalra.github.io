@@ -1,7 +1,7 @@
 "use strict";
 
 var _better = {
-    version: 2,
+    version: 1,
     logging: true,
     host: "https://bebetter.in",
     analytics: '/notification/analytics'
